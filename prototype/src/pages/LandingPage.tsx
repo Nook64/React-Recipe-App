@@ -51,14 +51,34 @@ function LandingPage() {
     setShowPantryRecipes(false);
 
     setTimeout(() => {
-      const filteredRecipes = allRecipes.filter(recipe =>
-        tags.some(tag => 
-          recipe.ingredients.some(ingredient => 
-            ingredient.toLowerCase().includes(tag.toLowerCase())
-          ) ||
-          recipe.title.toLowerCase().includes(tag.toLowerCase())
-        )
-      );
+      const filteredRecipes = allRecipes.filter(recipe => {
+        const lowerTags = tags.map(tag => tag.toLowerCase());
+        
+        // Prüfe, ob mindestens ein Tag auf das Rezept zutrifft
+        return lowerTags.some(tag => {
+          // Suche in Zutaten
+          const matchesIngredient = recipe.ingredients.some(ingredient => 
+            ingredient.toLowerCase().includes(tag)
+          );
+          
+          // Suche im Titel
+          const matchesTitle = recipe.title.toLowerCase().includes(tag);
+          
+          // Suche in Kategorie
+          const matchesCategory = recipe.category.toLowerCase().includes(tag);
+          
+          // Suche in Diet
+          const matchesDiet = recipe.diet.some(diet => 
+            diet.toLowerCase().includes(tag)
+          );
+          
+          // Suche in Kostenkategorie
+          const matchesCost = recipe.cost.toLowerCase().includes(tag);
+          
+          return matchesIngredient || matchesTitle || matchesCategory || 
+                 matchesDiet || matchesCost;
+        });
+      });
       setRecipes(filteredRecipes);
       setIsLoading(false);
     }, 500);
