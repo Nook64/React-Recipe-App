@@ -74,7 +74,10 @@ function PantryPage() {
     : items.filter(item => item.category === selectedCategory);
 
   const handleAddItem = () => {
-    if (!newItem.name.trim()) return;
+    if (!newItem.name.trim()) {
+        alert("Es fehlt der Name für das Gericht.")
+        return;
+    }
 
     const newItemObj: PantryItem = {
       id: Date.now().toString(),
@@ -181,7 +184,6 @@ function PantryPage() {
 
                 <button
                   onClick={handleAddItem}
-                  disabled={!newItem.name.trim()}
                   className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                     !newItem.name.trim()
                       ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
