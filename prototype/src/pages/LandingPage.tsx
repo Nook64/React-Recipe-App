@@ -74,7 +74,7 @@ function LandingPage() {
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder="z.B. 'Tomaten', 'vegetarisch', 'schnell', '<20min'"
                 className="w-full px-4 py-3 focus:outline-none rounded-xl bg-transparent"
               />
