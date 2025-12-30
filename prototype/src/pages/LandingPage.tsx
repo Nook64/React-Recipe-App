@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, X, ChefHat } from 'lucide-react';
+import { Search, X, ChefHat, Refrigerator, Clock } from 'lucide-react';
 import recipesData from '../assets/recipes.json';
 import type { Recipe } from '../types/recipe';
 
@@ -9,10 +9,22 @@ function LandingPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
+  const [showPantryRecipes, setShowPantryRecipes] = useState(false);
+  const [pantryItems, setPantryItems] = useState<{name: string, category: string, quantity: string}[]>([]);
 
   // Lade Rezepte beim Start
   useEffect(() => {
     setAllRecipes(recipesData.recipes);
+    // Lade Vorratsdaten aus localStorage
+    const savedItems = localStorage.getItem('coChefPantry');
+    if (savedItems) {
+      try {
+        const parsedItems = JSON.parse(savedItems);
+        setPantryItems(parsedItems);
+      } catch (error) {
+        console.error('Fehler beim Laden der Vorratsdaten:', error);
+      }
+    }
   }, []);
 
   const handleAddTag = () => {
@@ -31,11 +43,13 @@ function LandingPage() {
       handleAddTag();
     }
   };
-
+  // Normale Suche mit Tags
   const handleSearch = () => {
     if (tags.length === 0) return;
     
     setIsLoading(true);
+    setShowPantryRecipes(false);
+
     setTimeout(() => {
       const filteredRecipes = allRecipes.filter(recipe =>
         tags.some(tag => 
@@ -49,10 +63,55 @@ function LandingPage() {
       setIsLoading(false);
     }, 500);
   };
+  
+    // Suche mit Vorratsdaten
+  const findRecipesWithPantry = () => {
+    if (pantryItems.length === 0) {
+      alert('Du hast noch keine Zutaten in deinem Vorrat. Füge zuerst welche in der Vorratsliste hinzu.');
+      return;
+    }
+    
+    setIsLoading(true);
+    setShowPantryRecipes(true);
+    
+    // Extrahiere alle Zutatennamen aus dem Vorrat (in Kleinbuchstaben für bessere Übereinstimmung)
+    const pantryItemNames = pantryItems.map(item => item.name.toLowerCase());
+    
+    setTimeout(() => {
+      // Finde Rezepte, bei denen alle Hauptzutaten im Vorrat sind
+      const matchedRecipes = allRecipes.filter(recipe => {
+        // Liste von Grundzutaten, die ignoriert werden (weil sie meistens vorhanden sind)
+        const basicIngredients = ['salz', 'pfeffer', 'olivenöl', 'öl', 'wasser', 'zucker'];
+        
+        // Filtere Grundzutaten heraus und prüfe nur die Hauptzutaten
+        const mainIngredients = recipe.ingredients
+          .map(ingredient => ingredient.toLowerCase())
+          .filter(ingredient => 
+            !basicIngredients.some(basic => ingredient.includes(basic))
+          );
+        
+        // Wenn ein Rezept nur aus Grundzutaten besteht, ist es machbar
+        if (mainIngredients.length === 0) return true;
+        
+        // Prüfe, ob mindestens 70% der Hauptzutaten im Vorrat sind
+        const matchingIngredients = mainIngredients.filter(ingredient =>
+          pantryItemNames.some(pantryItem => 
+            pantryItem.includes(ingredient) || ingredient.includes(pantryItem)
+          )
+        );
+        
+        return matchingIngredients.length >= mainIngredients.length * 0.7;
+      });
+      
+      setRecipes(matchedRecipes);
+      setIsLoading(false);
+    }, 500);
+  };
 
   const handleClearAll = () => {
     setTags([]);
     setRecipes([]);
+    setShowPantryRecipes(false);
   };
 
   return (
@@ -135,8 +194,27 @@ function LandingPage() {
                 </>
               )}
             </button>
+
+            {/* Button für Vorratssuche */}
+            <button
+              onClick={findRecipesWithPantry}
+              disabled={isLoading}
+              className={`flex-1 px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                isLoading || pantryItems.length === 0
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  : 'bg-linear-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg hover:shadow-blue-200 hover:scale-[1.02]'
+              }`}
+            >
+              <Refrigerator className="w-5 h-5" />
+              Mit Vorrat kochen
+              {pantryItems.length > 0 && (
+                <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
+                  {pantryItems.length} Zutaten
+                </span>
+              )}
+            </button>
             
-            {tags.length > 0 && (
+            {(tags.length > 0 || showPantryRecipes) &&  (
               <button
                 onClick={handleClearAll}
                 className="px-6 py-3 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-xl font-medium transition-colors"
@@ -145,6 +223,19 @@ function LandingPage() {
               </button>
             )}
           </div>
+          {/* Hinweis zur Vorratssuche */}
+          {pantryItems.length === 0 && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-700 flex items-center gap-2">
+                <Refrigerator className="w-4 h-4" />
+                Du hast noch keine Zutaten in deinem Vorrat. Füge zuerst welche in der 
+                <a href="/pantry" className="font-semibold underline hover:text-blue-900 ml-1">
+                  Vorratsliste
+                </a>
+                hinzu.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Rezepte Ausgabe */}
@@ -178,7 +269,8 @@ function LandingPage() {
                         {recipe.title}
                       </h3>
                       <div className="flex items-center gap-2 text-gray-600 mb-3">
-                        <span className="text-sm">⏱️ {recipe.time} Min</span>
+                        <Clock className='w-4 h-4 text-gray-500' />
+                        <span className="text-sm"> {recipe.time} Min</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {recipe.ingredients.map((ingredient, idx) => (
