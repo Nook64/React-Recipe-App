@@ -1,19 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, X, ChefHat } from 'lucide-react';
+import recipesData from '../assets/recipes.json';
+import type { Recipe } from '../types/recipe';
 
 function LandingPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
-  const [recipes, setRecipes] = useState<Array<{id: number, title: string, ingredients: string[], time: number}>>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
 
-  const dummyRecipes = [
-    { id: 1, title: 'Zucchini-Feta Omelett', ingredients: ['Eier', 'Zucchini', 'Feta'], time: 15 },
-    { id: 2, title: 'Mediterrane Gemüsepfanne', ingredients: ['Paprika', 'Zucchini', 'Tomaten'], time: 25 },
-    { id: 3, title: 'Schnelle Nudeln mit Spinat', ingredients: ['Nudeln', 'Spinat', 'Knoblauch'], time: 20 },
-    { id: 4, title: 'Quinoa-Salat mit Kichererbsen', ingredients: ['Quinoa', 'Kichererbsen', 'Spinat'], time: 30 },
-    { id: 5, title: 'Hähnchen-Curry', ingredients: ['Hähnchen', 'Kokosmilch', 'Currypulver'], time: 35 },
-  ];
+  // Lade Rezepte beim Start
+  useEffect(() => {
+    setAllRecipes(recipesData.recipes);
+  }, []);
 
   const handleAddTag = () => {
     if (inputValue.trim() && !tags.includes(inputValue.trim())) {
@@ -37,7 +37,7 @@ function LandingPage() {
     
     setIsLoading(true);
     setTimeout(() => {
-      const filteredRecipes = dummyRecipes.filter(recipe =>
+      const filteredRecipes = allRecipes.filter(recipe =>
         tags.some(tag => 
           recipe.ingredients.some(ingredient => 
             ingredient.toLowerCase().includes(tag.toLowerCase())
@@ -56,7 +56,7 @@ function LandingPage() {
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-white p-4 md:p-8">
+    <div className="bg-linear-to-b from-gray-50 to-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Suchbereich */}
         <div className="mb-8">
@@ -120,7 +120,7 @@ function LandingPage() {
               className={`flex-1 px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                 tags.length === 0 || isLoading
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02]'
+                  : 'bg-linear-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02]'
               }`}
             >
               {isLoading ? (
@@ -225,7 +225,8 @@ function LandingPage() {
               <p className="text-gray-600 max-w-md mx-auto">
                 Gib oben Zutaten ein, die du verwenden möchtest, und finde passende Rezepte.
               </p>
-              <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-lg mx-auto">
+              
+              {/*<div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-lg mx-auto">
                 {['Tomaten', 'vegetarisch', 'schnell', '<20min', 'Reis', 'gesund', 'Hühnchen', 'einfach'].map((tag) => (
                   <button
                     key={tag}
@@ -239,7 +240,7 @@ function LandingPage() {
                     {tag}
                   </button>
                 ))}
-              </div>
+              </div>*/}
             </div>
           )}
         </main>

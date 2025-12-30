@@ -1,0 +1,229 @@
+{
+  "recipes": [
+    {
+      "id": 1,
+      "title": "Zucchini-Feta Omelett",
+      "ingredients": ["Eier", "Zucchini", "Feta-Käse", "Olivenöl", "Salz", "Pfeffer"],
+      "time": 15,
+      "category": "schnell",
+      "diet": ["vegetarisch"],
+      "cost": "sehr günstig"
+    },
+    {
+      "id": 2,
+      "title": "Mediterrane Gemüsepfanne",
+      "ingredients": ["Paprika", "Zucchini", "Tomaten", "Zwiebeln", "Knoblauch", "Olivenöl", "Kräuter"],
+      "time": 25,
+      "category": "gesund",
+      "diet": ["vegetarisch", "vegan"],
+      "cost": "günstig"
+    },
+    {
+      "id": 3,
+      "title": "Schnelle Nudeln mit Spinat",
+      "ingredients": ["Nudeln", "Spinat", "Knoblauch", "Sahne", "Parmesan", "Olivenöl"],
+      "time": 20,
+      "category": "schnell",
+      "diet": ["vegetarisch"],
+      "cost": "günstig"
+    },
+    {
+      "id": 4,
+      "title": "Quinoa-Salat mit Kichererbsen",
+      "ingredients": ["Quinoa", "Kichererbsen", "Spinat", "Kirschtomaten", "Feta", "Zitrone", "Olivenöl"],
+      "time": 30,
+      "category": "gesund",
+      "diet": ["vegetarisch", "high-protein"],
+      "cost": "mittel"
+    },
+    {
+      "id": 5,
+      "title": "Hähnchen-Curry",
+      "ingredients": ["Hähnchenbrust", "Kokosmilch", "Currypulver", "Zwiebeln", "Knoblauch", "Reis"],
+      "time": 35,
+      "category": "asiatisch",
+      "diet": ["high-protein"],
+      "cost": "mittel"
+    },
+    {
+      "id": 6,
+      "title": "Linsensuppe",
+      "ingredients": ["Rote Linsen", "Karotten", "Zwiebeln", "Knoblauch", "Gemüsebrühe", "Kartoffeln", "Kräuter"],
+      "time": 40,
+      "category": "herzhaft",
+      "diet": ["vegan", "vegetarisch", "low-carb"],
+      "cost": "sehr günstig"
+    },
+    {
+      "id": 7,
+      "title": "Avocado-Toast",
+      "ingredients": ["Brot", "Avocado", "Eier", "Salz", "Pfeffer", "Chili-Flocken"],
+      "time": 10,
+      "category": "schnell",
+      "diet": ["vegetarisch"],
+      "cost": "günstig"
+    },
+    {
+      "id": 8,
+      "title": "Griechischer Salat",
+      "ingredients": ["Gurke", "Tomaten", "Paprika", "Rote Zwiebeln", "Feta", "Oliven", "Olivenöl", "Oregano"],
+      "time": 15,
+      "category": "salat",
+      "diet": ["vegetarisch"],
+      "cost": "günstig"
+    },
+    {
+      "id": 9,
+      "title": "Vegetarische Lasagne",
+      "ingredients": ["Lasagneplatten", "Tomaten", "Zucchini", "Aubergine", "Mozzarella", "Béchamel", "Käse"],
+      "time": 60,
+      "category": "italienisch",
+      "diet": ["vegetarisch"],
+      "cost": "teurer"
+    },
+    {
+      "id": 10,
+      "title": "Thunfisch-Sandwich",
+      "ingredients": ["Brot", "Thunfisch", "Mayonnaise", "Zwiebeln", "Gurken", "Salat"],
+      "time": 10,
+      "category": "schnell",
+      "diet": ["high-protein"],
+      "cost": "günstig"
+    },
+    {
+      "id": 11,
+      "title": "Kürbissuppe",
+      "ingredients": ["Kürbis", "Zwiebeln", "Knoblauch", "Ingwer", "Kokosmilch", "Gemüsebrühe"],
+      "time": 30,
+      "category": "herzhaft",
+      "diet": ["vegan", "vegetarisch"],
+      "cost": "günstig"
+    },
+    {
+      "id": 12,
+      "title": "Chili sin Carne",
+      "ingredients": ["Kidneybohnen", "Mais", "Tomaten", "Zwiebeln", "Paprika", "Chilipulver", "Reis"],
+      "time": 45,
+      "category": "mexikanisch",
+      "diet": ["vegan", "vegetarisch", "high-protein"],
+      "cost": "sehr günstig"
+    },
+    {
+      "id": 13,
+      "title": "Rührei mit Pilzen",
+      "ingredients": ["Eier", "Champignons", "Zwiebeln", "Butter", "Schnittlauch", "Brot"],
+      "time": 15,
+      "category": "schnell",
+      "diet": ["vegetarisch", "low-carb"],
+      "cost": "günstig"
+    },
+    {
+      "id": 14,
+      "title": "Lachs mit Ofengemüse",
+      "ingredients": ["Lachsfilet", "Brokkoli", "Karotten", "Süßkartoffeln", "Olivenöl", "Zitrone", "Dill"],
+      "time": 35,
+      "category": "gesund",
+      "diet": ["high-protein", "low-carb"],
+      "cost": "teurer"
+    },
+    {
+      "id": 15,
+      "title": "Gemüse-Reis-Pfanne",
+      "ingredients": ["Reis", "Möhren", "Erbsen", "Mais", "Zwiebeln", "Sojasauce", "Ei"],
+      "time": 25,
+      "category": "asiatisch",
+      "diet": ["vegetarisch"],
+      "cost": "sehr günstig"
+    },
+    {
+      "id": 16,
+      "title": "Bolognese",
+      "ingredients": ["Hackfleisch", "Tomaten", "Zwiebeln", "Knoblauch", "Karotten", "Nudeln", "Rotwein"],
+      "time": 50,
+      "category": "italienisch",
+      "diet": ["high-protein"],
+      "cost": "mittel"
+    },
+    {
+      "id": 17,
+      "title": "Falafel mit Hummus",
+      "ingredients": ["Kichererbsen", "Koriander", "Kreuzkümmel", "Knoblauch", "Sesampaste", "Zitrone", "Fladenbrot"],
+      "time": 40,
+      "category": "orientalisch",
+      "diet": ["vegan", "vegetarisch"],
+      "cost": "günstig"
+    },
+    {
+      "id": 18,
+      "title": "Käsespätzle",
+      "ingredients": ["Spätzle", "Käse", "Zwiebeln", "Butter", "Salz", "Pfeffer"],
+      "time": 25,
+      "category": "deutsch",
+      "diet": ["vegetarisch"],
+      "cost": "günstig"
+    },
+    {
+      "id": 19,
+      "title": "Smoothie Bowl",
+      "ingredients": ["Banane", "Beeren", "Joghurt", "Haferflocken", "Chiasamen", "Honig", "Nüsse"],
+      "time": 10,
+      "category": "frühstück",
+      "diet": ["vegetarisch", "gesund"],
+      "cost": "mittel"
+    },
+    {
+      "id": 20,
+      "title": "Ratatouille",
+      "ingredients": ["Aubergine", "Zucchini", "Paprika", "Tomaten", "Zwiebeln", "Knoblauch", "Kräuter"],
+      "time": 55,
+      "category": "französisch",
+      "diet": ["vegan", "vegetarisch"],
+      "cost": "günstig"
+    },
+    {
+      "id": 21,
+      "title": "Pizza Margherita",
+      "ingredients": ["Pizzateig", "Tomaten", "Mozzarella", "Basilikum", "Olivenöl", "Oregano"],
+      "time": 30,
+      "category": "italienisch",
+      "diet": ["vegetarisch"],
+      "cost": "günstig"
+    },
+    {
+      "id": 22,
+      "title": "Thai-Curry",
+      "ingredients": ["Kokosmilch", "Currypaste", "Gemüse", "Tofu", "Reis", "Limettenblätter", "Fischsauce"],
+      "time": 40,
+      "category": "asiatisch",
+      "diet": ["vegan", "vegetarisch"],
+      "cost": "mittel"
+    },
+    {
+      "id": 23,
+      "title": "Kartoffelsuppe",
+      "ingredients": ["Kartoffeln", "Lauch", "Zwiebeln", "Gemüsebrühe", "Sahne", "Schnittlauch"],
+      "time": 35,
+      "category": "herzhaft",
+      "diet": ["vegetarisch"],
+      "cost": "sehr günstig"
+    },
+    {
+      "id": 24,
+      "title": "Caesar Salad",
+      "ingredients": ["Römersalat", "Croutons", "Parmesan", "Hähnchen", "Caesar-Dressing", "Zitrone"],
+      "time": 20,
+      "category": "salat",
+      "diet": ["high-protein"],
+      "cost": "mittel"
+    },
+    {
+      "id": 25,
+      "title": "Möhren-Ingwer-Suppe",
+      "ingredients": ["Möhren", "Ingwer", "Zwiebeln", "Kokosmilch", "Gemüsebrühe", "Kurkuma"],
+      "time": 30,
+      "category": "gesund",
+      "diet": ["vegan", "vegetarisch"],
+      "cost": "günstig"
+    }
+  ]
+}
