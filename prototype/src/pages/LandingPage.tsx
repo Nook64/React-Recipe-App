@@ -45,7 +45,6 @@ function LandingPage() {
   };
   // Normale Suche mit Tags
   const handleSearch = () => {
-    console.log(tags.length)
     if (tags.length === 0) {
         alert("Du hast noch keinen Tag angegeben. Schreibe dafür etwas in die Suchleiste und probiere es erneut.")
         return;
