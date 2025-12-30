@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Heart, Clock, X, ChefHat } from 'lucide-react';
+import { Heart, ChefHat } from 'lucide-react';
 import type { Recipe } from '../types/recipe';
+import RecipeCard from '../components/RecipeCard';
 
 function FavoritesPage() {
   const [favorites, setFavorites] = useState<Recipe[]>([]);
@@ -84,52 +85,20 @@ function FavoritesPage() {
                 </h2>
               </div>
             </div>
-            
+
+            {/* RecipeCard */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {favorites.map((recipe) => (
-                <div
-                  key={recipe.id}
-                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-all duration-200 relative"
-                >
-                  {/* Entfernen Button */}
-                  <button
-                    onClick={() => removeFromFavorites(recipe.id)}
-                    className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-sm hover:bg-red-50 hover:text-red-600 transition-colors"
-                    title="Aus Favoriten entfernen"
-                  >
-                    <Heart className="w-5 h-5 fill-red-500 text-red-500" />
-                  </button>
-                  
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 pr-8">
-                      {recipe.title}
-                    </h3>
-                    <div className="flex items-center gap-2 text-gray-600 mb-3">
-                      <Clock className='w-4 h-4 text-gray-500' />
-                      <span className="text-sm"> {recipe.time} Min</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {recipe.ingredients.slice(0, 6).map((ingredient, idx) => (
-                        <span
-                          key={idx}
-                          className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full"
-                        >
-                          {ingredient}
-                        </span>
-                      ))}
-                      {recipe.ingredients.length > 6 && (
-                        <span className="text-xs px-2 py-1 text-gray-500">
-                          +{recipe.ingredients.length - 6} weitere
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <button className="w-full text-center text-green-600 hover:text-green-800 font-medium py-2 border border-green-200 rounded-lg hover:bg-green-50 transition-colors">
-                    Rezept ansehen
-                  </button>
-                </div>
-              ))}
+                {favorites.map((recipe) => (
+                <RecipeCard
+                    key={recipe.id}
+                    recipe={recipe}
+                    isFavorite={true}
+                    onToggleFavorite={(recipe) => removeFromFavorites(recipe.id)}
+                    showViewButton={true}
+                />
+                ))}
             </div>
+
           </>
         ) : (
           <div className="text-center py-16 bg-white rounded-xl border border-gray-200">

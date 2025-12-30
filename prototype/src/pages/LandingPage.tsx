@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Search, X, ChefHat, Refrigerator, Clock, Heart } from 'lucide-react';
+import { Search, X, ChefHat, Refrigerator } from 'lucide-react';
 import recipesData from '../assets/recipes.json';
 import type { Recipe } from '../types/recipe';
+import RecipeCard from '../components/RecipeCard';
 
 function LandingPage() {
   const [tags, setTags] = useState<string[]>([]);
@@ -310,108 +311,20 @@ function LandingPage() {
                 </p>
               </div>
               
+              {/* RecipeCard */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recipes.map((recipe) => {
-                  const favorite = isFavorite(recipe.id);
-                  
-                  // Funktion um zu prüfen, ob ein Wert mit einem Such-Tag übereinstimmt
-                  const matchesTag = (value: string) => {
-                    return tags.some(tag => 
-                      value.toLowerCase().includes(tag.toLowerCase())
-                    );
-                  };
-                  
-                  return (
-                    <div
-                      key={recipe.id}
-                      className="bg-white rounded-xl border border-gray-200 p-5 hover:border-green-300 hover:shadow-md transition-all duration-200 relative"
-                    >
-                      {/* Favoriten Button */}
-                      <button
-                        onClick={() => toggleFavorite(recipe)}
-                        className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-sm hover:bg-red-50 transition-colors z-10"
-                        title={favorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
-                      >
-                        <Heart 
-                          className={`w-5 h-5 transition-all ${favorite ? 'fill-red-500 text-red-500' : 'text-gray-400 hover:text-red-400'}`}
-                        />
-                      </button>
-                      
-                      <div className="mb-4">
-                        <h3 className={`text-lg font-semibold mb-2 pr-10 ${
-                          matchesTag(recipe.title) ? 'text-green-700' : 'text-gray-900'
-                        }`}>
-                          {recipe.title}
-                        </h3>
-                        <div className="flex items-center gap-2 text-gray-600 mb-3">
-                          <Clock className='w-4 h-4 text-gray-500' />
-                          <span className={`text-sm ${
-                            tags.some(tag => tag.includes(recipe.time.toString()) || tag.includes('min') || tag.includes('<')) 
-                              ? 'text-green-700 font-medium' 
-                              : 'text-gray-600'
-                          }`}>
-                            {recipe.time} Min
-                          </span>
-                        </div>
-                        
-                        {/* Kategorie, Diät und Kosten Tags */}
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {/* Kategorie */}
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            matchesTag(recipe.category) 
-                              ? 'bg-green-100 text-green-800 border border-green-200' 
-                              : 'bg-gray-100 text-gray-600'
-                          }`}>
-                            {recipe.category}
-                          </span>
-                          
-                          {/* Diät-Tags */}
-                          {recipe.diet.map((diet, idx) => (
-                            <span
-                              key={idx}
-                              className={`text-xs px-2 py-1 rounded-full ${
-                                matchesTag(diet)
-                                  ? 'bg-green-100 text-green-800 border border-green-200'
-                                  : 'bg-gray-100 text-gray-600'
-                              }`}
-                            >
-                              {diet}
-                            </span>
-                          ))}
-                          
-                          {/* Kosten */}
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            matchesTag(recipe.cost)
-                              ? 'bg-green-100 text-green-800 border border-green-200'
-                              : 'bg-gray-100 text-gray-600'
-                          }`}>
-                            {recipe.cost}
-                          </span>
-                        </div>
-                        
-                        {/* Zutaten-Tags */}
-                        <div className="flex flex-wrap gap-2">
-                          {recipe.ingredients.map((ingredient, idx) => (
-                            <span
-                              key={idx}
-                              className={`text-xs px-2 py-1 rounded-full ${
-                                matchesTag(ingredient)
-                                  ? 'bg-green-100 text-green-800 border border-green-200'
-                                  : 'bg-gray-100 text-gray-600'
-                              }`}
-                            >
-                              {ingredient}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <button className="w-full text-center text-green-600 hover:text-green-800 font-medium py-2 border border-green-200 rounded-lg hover:bg-green-50 transition-colors">
-                        Rezept ansehen
-                      </button>
-                    </div>
-                  );
-                })}
+                {recipes.map((recipe) => (
+                  <RecipeCard
+                    key={recipe.id}
+                    recipe={recipe}
+                    isFavorite={isFavorite(recipe.id)}
+                    onToggleFavorite={toggleFavorite}
+                    highlightTags={tags}
+                    showViewButton={true}
+                  />
+                ))}
               </div>
+
             </>
           ) : tags.length > 0 ? (
             <div className="text-center py-12">
