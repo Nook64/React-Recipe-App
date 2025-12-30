@@ -45,7 +45,11 @@ function LandingPage() {
   };
   // Normale Suche mit Tags
   const handleSearch = () => {
-    if (tags.length === 0) return;
+    console.log(tags.length)
+    if (tags.length === 0) {
+        alert("Du hast noch keinen Tag angegeben. Schreibe dafür etwas in die Suchleiste und probiere es erneut.")
+        return;
+    }
     
     setIsLoading(true);
     setShowPantryRecipes(false);
@@ -195,7 +199,7 @@ function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={handleSearch}
-              disabled={tags.length === 0 || isLoading}
+              disabled={isLoading}
               className={`flex-1 px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                 tags.length === 0 || isLoading
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
