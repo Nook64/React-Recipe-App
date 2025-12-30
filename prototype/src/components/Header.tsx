@@ -20,6 +20,9 @@ function Header() {
             <Link to="/pantry" className="text-gray-700 hover:text-green-600 font-medium">
               Vorrat
             </Link>
+            <Link to="/favorites" className="text-gray-700 hover:text-green-600 font-medium">
+              Favoriten
+            </Link>
           </nav>
         </div>
       </div>

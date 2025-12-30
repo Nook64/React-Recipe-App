@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, X, ChefHat, Refrigerator, Clock } from 'lucide-react';
+import { Search, X, ChefHat, Refrigerator, Clock, Heart } from 'lucide-react';
 import recipesData from '../assets/recipes.json';
 import type { Recipe } from '../types/recipe';
 
@@ -11,6 +11,7 @@ function LandingPage() {
   const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
   const [showPantryRecipes, setShowPantryRecipes] = useState(false);
   const [pantryItems, setPantryItems] = useState<{name: string, category: string, quantity: string}[]>([]);
+  const [favorites, setFavorites] = useState<Recipe[]>([]);
 
   // Lade Rezepte beim Start
   useEffect(() => {
@@ -23,6 +24,17 @@ function LandingPage() {
         setPantryItems(parsedItems);
       } catch (error) {
         console.error('Fehler beim Laden der Vorratsdaten:', error);
+      }
+    }
+
+    // Lade Favoriten aus localStorage
+    const savedFavorites = localStorage.getItem('coChefFavorites');
+    if (savedFavorites) {
+      try {
+        const parsedFavorites = JSON.parse(savedFavorites);
+        setFavorites(parsedFavorites);
+      } catch (error) {
+        console.error('Fehler beim Laden der Favoriten:', error);
       }
     }
   }, []);
@@ -132,6 +144,26 @@ function LandingPage() {
     setTags([]);
     setRecipes([]);
     setShowPantryRecipes(false);
+  };
+
+  const toggleFavorite = (recipe: Recipe) => {
+    const isAlreadyFavorite = favorites.some(fav => fav.id === recipe.id);
+    let updatedFavorites: Recipe[];
+    
+    if (isAlreadyFavorite) {
+      // Entfernen
+      updatedFavorites = favorites.filter(fav => fav.id !== recipe.id);
+    } else {
+      // Hinzufügen
+      updatedFavorites = [...favorites, recipe];
+    }
+    
+    setFavorites(updatedFavorites);
+    localStorage.setItem('coChefFavorites', JSON.stringify(updatedFavorites));
+  };
+
+  const isFavorite = (recipeId: number) => {
+    return favorites.some(fav => fav.id === recipeId);
   };
 
   return (
@@ -279,39 +311,106 @@ function LandingPage() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recipes.map((recipe) => (
-                  <div
-                    key={recipe.id}
-                    className="bg-white rounded-xl border border-gray-200 p-5 hover:border-green-300 hover:shadow-md transition-all duration-200"
-                  >
-                    <div className="mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {recipe.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-gray-600 mb-3">
-                        <Clock className='w-4 h-4 text-gray-500' />
-                        <span className="text-sm"> {recipe.time} Min</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {recipe.ingredients.map((ingredient, idx) => (
-                          <span
-                            key={idx}
-                            className={`text-xs px-2 py-1 rounded-full ${
-                              tags.some(tag => ingredient.toLowerCase().includes(tag.toLowerCase()))
-                                ? 'bg-green-100 text-green-800 border border-green-200'
-                                : 'bg-gray-100 text-gray-600'
-                            }`}
-                          >
-                            {ingredient}
+                {recipes.map((recipe) => {
+                  const favorite = isFavorite(recipe.id);
+                  
+                  // Funktion um zu prüfen, ob ein Wert mit einem Such-Tag übereinstimmt
+                  const matchesTag = (value: string) => {
+                    return tags.some(tag => 
+                      value.toLowerCase().includes(tag.toLowerCase())
+                    );
+                  };
+                  
+                  return (
+                    <div
+                      key={recipe.id}
+                      className="bg-white rounded-xl border border-gray-200 p-5 hover:border-green-300 hover:shadow-md transition-all duration-200 relative"
+                    >
+                      {/* Favoriten Button */}
+                      <button
+                        onClick={() => toggleFavorite(recipe)}
+                        className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-sm hover:bg-red-50 transition-colors z-10"
+                        title={favorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+                      >
+                        <Heart 
+                          className={`w-5 h-5 transition-all ${favorite ? 'fill-red-500 text-red-500' : 'text-gray-400 hover:text-red-400'}`}
+                        />
+                      </button>
+                      
+                      <div className="mb-4">
+                        <h3 className={`text-lg font-semibold mb-2 pr-10 ${
+                          matchesTag(recipe.title) ? 'text-green-700' : 'text-gray-900'
+                        }`}>
+                          {recipe.title}
+                        </h3>
+                        <div className="flex items-center gap-2 text-gray-600 mb-3">
+                          <Clock className='w-4 h-4 text-gray-500' />
+                          <span className={`text-sm ${
+                            tags.some(tag => tag.includes(recipe.time.toString()) || tag.includes('min') || tag.includes('<')) 
+                              ? 'text-green-700 font-medium' 
+                              : 'text-gray-600'
+                          }`}>
+                            {recipe.time} Min
                           </span>
-                        ))}
+                        </div>
+                        
+                        {/* Kategorie, Diät und Kosten Tags */}
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {/* Kategorie */}
+                          <span className={`text-xs px-2 py-1 rounded-full ${
+                            matchesTag(recipe.category) 
+                              ? 'bg-green-100 text-green-800 border border-green-200' 
+                              : 'bg-gray-100 text-gray-600'
+                          }`}>
+                            {recipe.category}
+                          </span>
+                          
+                          {/* Diät-Tags */}
+                          {recipe.diet.map((diet, idx) => (
+                            <span
+                              key={idx}
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                matchesTag(diet)
+                                  ? 'bg-green-100 text-green-800 border border-green-200'
+                                  : 'bg-gray-100 text-gray-600'
+                              }`}
+                            >
+                              {diet}
+                            </span>
+                          ))}
+                          
+                          {/* Kosten */}
+                          <span className={`text-xs px-2 py-1 rounded-full ${
+                            matchesTag(recipe.cost)
+                              ? 'bg-green-100 text-green-800 border border-green-200'
+                              : 'bg-gray-100 text-gray-600'
+                          }`}>
+                            {recipe.cost}
+                          </span>
+                        </div>
+                        
+                        {/* Zutaten-Tags */}
+                        <div className="flex flex-wrap gap-2">
+                          {recipe.ingredients.map((ingredient, idx) => (
+                            <span
+                              key={idx}
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                matchesTag(ingredient)
+                                  ? 'bg-green-100 text-green-800 border border-green-200'
+                                  : 'bg-gray-100 text-gray-600'
+                              }`}
+                            >
+                              {ingredient}
+                            </span>
+                          ))}
+                        </div>
                       </div>
+                      <button className="w-full text-center text-green-600 hover:text-green-800 font-medium py-2 border border-green-200 rounded-lg hover:bg-green-50 transition-colors">
+                        Rezept ansehen
+                      </button>
                     </div>
-                    <button className="w-full text-center text-green-600 hover:text-green-800 font-medium py-2 border border-green-200 rounded-lg hover:bg-green-50 transition-colors">
-                      Rezept ansehen
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </>
           ) : tags.length > 0 ? (
@@ -337,22 +436,6 @@ function LandingPage() {
               <p className="text-gray-600 max-w-md mx-auto">
                 Gib oben Zutaten ein, die du verwenden möchtest, und finde passende Rezepte.
               </p>
-              
-              {/*<div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-lg mx-auto">
-                {['Tomaten', 'vegetarisch', 'schnell', '<20min', 'Reis', 'gesund', 'Hühnchen', 'einfach'].map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => {
-                      if (!tags.includes(tag)) {
-                        setTags([...tags, tag]);
-                      }
-                    }}
-                    className="text-sm px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors"
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>*/}
             </div>
           )}
         </main>
