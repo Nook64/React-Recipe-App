@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Check, Edit, X, Refrigerator } from 'lucide-react';
+import { Plus, Trash2, Refrigerator } from 'lucide-react';
+import PantryItem from '../components/PantryItem';
 
 interface PantryItem {
   id: string;
@@ -16,8 +17,7 @@ function PantryPage() {
     category: 'Gemüse',
     quantity: '',
   });
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', category: '', quantity: '' });
+
   const [selectedCategory, setSelectedCategory] = useState<string>('alle');
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -92,30 +92,12 @@ function PantryPage() {
     setItems(items.filter(item => item.id !== id));
   };
 
-  const startEditing = (item: PantryItem) => {
-    setEditingId(item.id);
-    setEditForm({
-      name: item.name,
-      category: item.category,
-      quantity: item.quantity,
-    });
-  };
-
-  const saveEdit = () => {
-    if (!editingId) return;
-
+  const handleEditItem = (id: string, data: { name: string; category: string; quantity: string }) => {
     setItems(items.map(item => 
-      item.id === editingId 
-        ? { ...item, ...editForm, name: editForm.name.trim() }
+      item.id === id 
+        ? { ...item, ...data }
         : item
     ));
-    setEditingId(null);
-    setEditForm({ name: '', category: '', quantity: '' });
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditForm({ name: '', category: '', quantity: '' });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -255,96 +237,13 @@ function PantryPage() {
             {filteredItems.length > 0 ? (
               <div className="space-y-4">
                 {filteredItems.map(item => (
-                  <div key={item.id} className="bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 hover:shadow-sm transition-all duration-200">
-                    {editingId === item.id ? (
-                      /* Bearbeitungsmodus */
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <input
-                            type="text"
-                            value={editForm.name}
-                            onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                            className="text-lg font-semibold px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-                          />
-                          <div className="flex gap-2">
-                            <button
-                              onClick={saveEdit}
-                              className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                              title="Speichern"
-                            >
-                              <Check className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={cancelEdit}
-                              className="p-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-                              title="Abbrechen"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                          <select
-                            value={editForm.category}
-                            onChange={(e) => setEditForm({...editForm, category: e.target.value})}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-                          >
-                            {categories.filter(cat => cat !== 'alle').map(category => (
-                              <option key={category} value={category}>{category}</option>
-                            ))}
-                          </select>
-                          
-                          <input
-                            type="text"
-                            value={editForm.quantity}
-                            onChange={(e) => setEditForm({...editForm, quantity: e.target.value})}
-                            placeholder="Menge"
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      /* Anzeigemodus */
-                      <>
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                              {item.name}
-                            </h3>
-                            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-                              <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full">
-                                {item.category}
-                              </span>
-                              <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full">
-                                {item.quantity}
-                              </span>
-                              <span className="text-gray-400">
-                                {item.addedAt.toLocaleDateString('de-DE')}
-                              </span>
-                            </div>
-                          </div>
-                          
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => startEditing(item)}
-                              className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                              title="Bearbeiten"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteItem(item.id)}
-                              className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
-                              title="Löschen"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
+                  <PantryItem
+                    key={item.id}
+                    item={item}
+                    categories={categories}
+                    onEdit={handleEditItem}
+                    onDelete={handleDeleteItem}
+                  />
                 ))}
               </div>
             ) : (
