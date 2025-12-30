@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import './index.css'
 import App from './App.tsx'
 import LandingPage from './pages/LandingPage'
+import PantryPage from './pages/PantryPage.tsx'
 
 
 const router = createBrowserRouter([
@@ -12,6 +13,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "", element: <LandingPage /> },
+      { path: "pantry", element: <PantryPage /> },
     ],
   },
 ]);

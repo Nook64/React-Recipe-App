@@ -17,14 +17,8 @@ function Header() {
             <Link to="/" className="text-gray-700 hover:text-green-600 font-medium">
               Home
             </Link>
-            <Link to="/output" className="text-gray-700 hover:text-green-600 font-medium">
-              Rezepte
-            </Link>
-            <Link to="/input" className="text-gray-700 hover:text-green-600 font-medium">
-              Rezept teilen
-            </Link>
-            <Link to="/usp" className="text-gray-700 hover:text-green-600 font-medium">
-              Features
+            <Link to="/pantry" className="text-gray-700 hover:text-green-600 font-medium">
+              Vorrat
             </Link>
           </nav>
         </div>
