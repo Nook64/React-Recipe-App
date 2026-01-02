@@ -389,7 +389,7 @@ function LandingPage() {
                   className="text-sm text-red-600 hover:text-red-800 flex items-center gap-2 font-semibold"
                 >
                   <X className="w-4 h-4" />
-                  Alles löschen
+                  Alles zurücksetzen
                 </button>
               </div>
 
