@@ -29,11 +29,10 @@ function LandingPage() {
   const [favorites, setFavorites] = useState<Recipe[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false); // NEU: Trackt ob Suche gestartet wurde
+  const [hasSearched, setHasSearched] = useState(false);
 
   // Filteroptionen mit Icons
   const filterOptions = [
-    { value: "<20", label: "<20 Min", icon: <Clock className="w-4 h-4" /> },
     {
       value: "vegetarisch",
       label: "Vegetarisch",
@@ -138,77 +137,25 @@ function LandingPage() {
 
     setIsLoading(true);
     setShowPantryRecipes(false);
-    setHasSearched(true); // NEU: Suche wurde gestartet
+    setHasSearched(true);
 
     setTimeout(() => {
+      const lowerTags = allTags.map((tag) => tag.toLowerCase());
+
       const filteredRecipes = allRecipes.filter((recipe) => {
-        const lowerTags = allTags.map((tag) => tag.toLowerCase());
+        // Kombiniere alle durchsuchbaren Felder des Rezepts in einen großen String
+        const searchableContent = [
+          recipe.title,
+          recipe.category,
+          recipe.cost,
+          ...recipe.ingredients,
+          ...recipe.diet,
+        ]
+          .join(" ")
+          .toLowerCase();
 
-        return lowerTags.some((tag) => {
-          // Zeit-Filter prüfen
-          if (tag.includes("<")) {
-            const time = parseInt(tag.replace("<", "").trim());
-            return recipe.time <= time;
-          }
-
-          const matchesIngredient = recipe.ingredients.some((ingredient) => {
-            const lowerIngredient = ingredient.toLowerCase();
-
-            // Exakte Übereinstimmung oder Wortanfang
-            if (
-              lowerIngredient === tag ||
-              lowerIngredient.startsWith(tag + " ") ||
-              lowerIngredient.includes(" " + tag + " ") ||
-              lowerIngredient.endsWith(" " + tag)
-            ) {
-              return true;
-            }
-
-            // Oder enthält das Wort als Teil, aber nicht zu allgemein
-            const generalIngredients = [
-              "öl",
-              "salz",
-              "pfeffer",
-              "wasser",
-              "zucker",
-            ];
-            if (generalIngredients.includes(tag)) {
-              // Für allgemeine Zutaten machen wir genauere Suche
-              return (
-                lowerIngredient.includes(tag) &&
-                (lowerIngredient === tag ||
-                  lowerIngredient.includes(tag + "-") ||
-                  lowerIngredient.includes(" " + tag))
-              );
-            }
-
-            //  Für normale Zutaten berücksichtigen Wortgrenzen
-            const words = lowerIngredient.split(/[\s,-]+/);
-            return words.some((word) => word === tag);
-          });
-
-          // Suchen im Titel
-          const matchesTitle = recipe.title.toLowerCase().includes(tag);
-
-          // Suchen in Kategorie
-          const matchesCategory = recipe.category.toLowerCase() === tag;
-
-          // Suchen in Diet (exakte Übereinstimmung im Array)
-          const matchesDiet = recipe.diet.some(
-            (diet) => diet.toLowerCase() === tag
-          );
-
-          // Suchen in Kostenkategorie
-          const matchesCost = recipe.cost.toLowerCase() === tag;
-
-          return (
-            matchesIngredient ||
-            matchesTitle ||
-            matchesCategory ||
-            matchesDiet ||
-            matchesCost
-          );
-        });
+        // Prüfe, ob all Tags im kombinierten Inhalt vorkommen (AND-Logik)
+        return lowerTags.every((tag) => searchableContent.includes(tag));
       });
 
       setRecipes(filteredRecipes);
@@ -227,7 +174,7 @@ function LandingPage() {
 
     setIsLoading(true);
     setShowPantryRecipes(true);
-    setHasSearched(true); // NEU: Suche wurde gestartet
+    setHasSearched(true);
 
     const pantryItemNames = pantryItems.map((item) => item.name.toLowerCase());
 
@@ -271,7 +218,7 @@ function LandingPage() {
     setSelectedFilters([]);
     setRecipes([]);
     setShowPantryRecipes(false);
-    setHasSearched(false); // NEU: Zurücksetzen
+    setHasSearched(false);
   };
 
   const toggleFavorite = (recipe: Recipe) => {
@@ -608,7 +555,7 @@ function LandingPage() {
                 </div>
               </div>
             </>
-          ) : hasSearched ? ( // GEÄNDERT: Nur anzeigen wenn Suche gestartet wurde
+          ) : hasSearched ? (
             <div className="text-center py-16 bg-linear-to-b from-gray-50 to-white rounded-2xl border border-gray-200">
               <div className="w-20 h-20 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <Search className="w-10 h-10 text-gray-400" />
