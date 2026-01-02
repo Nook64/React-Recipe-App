@@ -67,34 +67,22 @@ function LandingPage() {
     setShowPantryRecipes(false);
 
     setTimeout(() => {
+      const lowerTags = tags.map(tag => tag.toLowerCase());
+      
       const filteredRecipes = allRecipes.filter(recipe => {
-        const lowerTags = tags.map(tag => tag.toLowerCase());
+        // Kombiniere alle durchsuchbaren Felder des Rezepts in einen großen String
+        const searchableContent = [
+          recipe.title,
+          recipe.category,
+          recipe.cost,
+          ...recipe.ingredients,
+          ...recipe.diet
+        ].join(' ').toLowerCase();
         
-        // Prüfe, ob mindestens ein Tag auf das Rezept zutrifft
-        return lowerTags.some(tag => {
-          // Suche in Zutaten
-          const matchesIngredient = recipe.ingredients.some(ingredient => 
-            ingredient.toLowerCase().includes(tag)
-          );
-          
-          // Suche im Titel
-          const matchesTitle = recipe.title.toLowerCase().includes(tag);
-          
-          // Suche in Kategorie
-          const matchesCategory = recipe.category.toLowerCase().includes(tag);
-          
-          // Suche in Diet
-          const matchesDiet = recipe.diet.some(diet => 
-            diet.toLowerCase().includes(tag)
-          );
-          
-          // Suche in Kostenkategorie
-          const matchesCost = recipe.cost.toLowerCase().includes(tag);
-          
-          return matchesIngredient || matchesTitle || matchesCategory || 
-                 matchesDiet || matchesCost;
-        });
+        // Prüfe, ob all Tags im kombinierten Inhalt vorkommen
+        return lowerTags.every(tag => searchableContent.includes(tag));
       });
+      
       setRecipes(filteredRecipes);
       setIsLoading(false);
     }, 500);

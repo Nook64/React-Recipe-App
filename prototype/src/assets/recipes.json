@@ -195,7 +195,7 @@
       "ingredients": ["Kokosmilch", "Currypaste", "Gemüse", "Tofu", "Reis", "Limettenblätter", "Fischsauce"],
       "time": 40,
       "category": "asiatisch",
-      "diet": ["vegan", "vegetarisch"],
+      "diet": [],
       "cost": "mittel"
     },
     {
