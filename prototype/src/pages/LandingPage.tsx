@@ -240,7 +240,7 @@ function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-white via-emerald-50/20 to-white p-4 md:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-b from-white via-emerald-50/20 to-white p-4 md:p-8 relative overflow-hidden mt-8">
       {/* Hintergrund-Elemente */}
       <div className="absolute top-0 left-0 right-0 h-96 bg-linear-to-br from-emerald-50/30 via-transparent to-transparent -z-10"></div>
       <div className="absolute top-40 -right-40 w-80 h-80 bg-emerald-100/20 rounded-full blur-3xl -z-10"></div>
@@ -248,14 +248,14 @@ function LandingPage() {
       <div className="max-w-6xl mx-auto">
         {/* Hero Section*/}
         <div className="text-center mb-10 md:mb-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             <span className="text-transparent bg-clip-text bg-linear-to-r from-green-600 to-emerald-700">
               Koche schlauer.
             </span>
             <br />
             <span className="text-gray-900">Mit dem was da ist.</span>
           </h1>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 text-sm max-w-2xl mx-auto md:text-base lg:text-lg">
             Entdecke Rezepte basierend auf deinen Zutaten, Vorräten und
             Vorlieben
           </p>
@@ -274,7 +274,7 @@ function LandingPage() {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={handleKeyPress}
-                  placeholder="Was hast du im Kühlschrank? Z.B. Tomaten, Kartoffeln, Hähnchen..."
+                  placeholder="Z.B. Tomaten, Kartoffeln, Hähnchen..."
                   className="w-full pl-12 pr-12 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 focus:outline-none transition-all text-base"
                 />
                 {inputValue && (
@@ -316,7 +316,7 @@ function LandingPage() {
                   <div className="max-h-82 overflow-y-auto">
                     <div className="p-5 border-b border-gray-100 bg-emerald-200">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-xl font-bold text-gray-800">
+                        <h4 className="text-lg font-bold text-gray-800 md:text-xl">
                           Filter auswählen
                         </h4>
                         {selectedFilters.length > 0 && (
@@ -329,7 +329,7 @@ function LandingPage() {
                           </button>
                         )}
                       </div>
-                      <p className="text-gray-600 mt-1">
+                      <p className="text-gray-600 mt-1 text-sm md:text-base">
                         Mehrfachauswahl möglich
                       </p>
                     </div>
@@ -532,13 +532,6 @@ function LandingPage() {
                       </span>
                     </div>
                   </div>
-                  <button
-                    onClick={handleClearAll}
-                    className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-2"
-                  >
-                    <X className="w-4 h-4" />
-                    Suche zurücksetzen
-                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
