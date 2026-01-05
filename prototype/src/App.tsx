@@ -9,7 +9,6 @@ function App() {
       <main className="grow">
         <Outlet />
       </main>
-      <Footer />
     </div>
   );
 }
