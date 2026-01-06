@@ -8,6 +8,7 @@ interface PantryItem {
   category: string;
   quantity: string;
   addedAt: Date;
+  isDeleted: boolean;
 }
 
 function PantryPage() {
@@ -16,10 +17,15 @@ function PantryPage() {
     name: '',
     category: 'Gemüse',
     quantity: '',
+    isDeleted: false,
   });
 
   const [selectedCategory, setSelectedCategory] = useState<string>('alle');
   const [isInitialized, setIsInitialized] = useState(false);
+
+  // State fuer geloeschte Elemente sichtbar
+  const [showTrash, setShowTrash] = useState(false);
+  const deletedItems = items.filter(item => item.isDeleted);
 
   // Kategorien für die Filterung
   const categories = [
@@ -64,14 +70,21 @@ function PantryPage() {
   // Speichere Daten in localStorage bei jeder Änderung
   useEffect(() => {
     if (!isInitialized) return;
+
+    const activeItems = items.filter(item => !item.isDeleted);
+    const trashItems = items.filter(item => item.isDeleted);
     
     // Speichere die aktuellen Items im localStorage
-    localStorage.setItem('coChefPantry', JSON.stringify(items));
+    localStorage.setItem('coChefPantry', JSON.stringify(activeItems));
+
+    // Trash Items kommen in tempraeren SessionStorage 
+    sessionStorage.setItem('coChefPantryTrash', JSON.stringify(trashItems));
   }, [items, isInitialized]);
 
+  const activeItems = items.filter(item => !item.isDeleted);
   const filteredItems = selectedCategory === 'alle' 
-    ? items 
-    : items.filter(item => item.category === selectedCategory);
+    ? activeItems 
+    : activeItems.filter(item => item.category === selectedCategory);
 
   const handleAddItem = () => {
     if (!newItem.name.trim()) {
@@ -92,7 +105,22 @@ function PantryPage() {
   };
 
   const handleDeleteItem = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
+    setItems(prev => prev.map(item => 
+      item.id === id ? { ...item, isDeleted: true } : item
+    ));
+  };
+
+  const handlePermanentDelete = () => {
+    if (window.confirm('Möchtest du wirklich alle Zutaten endgültig löschen?')) {
+      setItems(prev => prev.filter(item => !item.isDeleted));
+      setShowTrash(false); // Close the trash since it's now empty
+    }
+  };
+  // Add a restore function if you want a "Trash" UI
+  const handleRestoreItem = (id: string) => {
+    setItems(prev => prev.map(item => 
+      item.id === id ? { ...item, isDeleted: false } : item
+    ));
   };
 
   const handleEditItem = (id: string, data: { name: string; category: string; quantity: string }) => {
@@ -110,8 +138,10 @@ function PantryPage() {
   };
 
   const clearAll = () => {
-    if (window.confirm('Möchtest du wirklich alle Zutaten löschen?')) {
-      setItems([]);
+    if (window.confirm('Möchtest du wirklich alle Zutaten in den Papierkorb verschieben?')) {
+      setItems(prevItems => 
+        prevItems.map(item => ({ ...item, isDeleted: true }))
+      );
     }
   };
 
@@ -208,70 +238,116 @@ function PantryPage() {
           </div>
 
           {/* Rechte Spalte: Zutatenliste */}
-          <div className="lg:col-span-2">
-            {/* Filter */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Meine Zutaten</h2>
-                  <p className="text-gray-600 text-sm">
-                    {itemCount} Zutaten
+            <div className="lg:col-span-2">
+              {/* Filter & Trash Toggle UI (from the previous step) */}
+              <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Meine Zutaten</h2>
+                    <p className="text-gray-600 text-sm">{activeItems.length} Zutaten aktiv</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    {deletedItems.length > 0 && (
+                      <button
+                        onClick={() => setShowTrash(!showTrash)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                          showTrash 
+                            ? 'bg-red-50 border-red-200 text-red-600' 
+                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span className="text-sm font-medium">{deletedItems.length}</span>
+                      </button>
+                    )}
+            
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                    >
+                      {categories.map(category => (
+                        <option key={category} value={category}>
+                          {category === 'alle' ? 'Alle Kategorien' : category}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            
+              {/* Zutatenliste (The Active Items) */}
+              {filteredItems.length > 0 ? (
+                <div className="space-y-4">
+                  {filteredItems.map(item => (
+                    <PantryItem
+                      key={item.id}
+                      item={item}
+                      categories={categories}
+                      onEdit={handleEditItem}
+                      onDelete={handleDeleteItem}
+                    />
+                  ))}
+                </div>
+              ) : (
+                /* This is the "existing empty list JSX" I mentioned */
+                <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Refrigerator className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                    {selectedCategory === 'alle' ? 'Keine Zutaten vorhanden' : 'Keine Zutaten in dieser Kategorie'}
+                  </h3>
+                  <p className="text-gray-600 max-w-md mx-auto mb-6">
+                    {selectedCategory === 'alle' 
+                      ? 'Füge deine ersten Zutaten hinzu.' 
+                      : `Keine Zutaten in der Kategorie "${selectedCategory}".`}
                   </p>
+                  {selectedCategory !== 'alle' && (
+                    <button
+                      onClick={() => setSelectedCategory('alle')}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Alle Zutaten anzeigen
+                    </button>
+                  )}
                 </div>
-                
-                <div className="flex items-center gap-4">
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-                  >
-                    {categories.map(category => (
-                      <option key={category} value={category}>
-                        {category === 'alle' ? 'Alle Kategorien' : category}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Zutatenliste */}
-            {filteredItems.length > 0 ? (
-              <div className="space-y-4">
-                {filteredItems.map(item => (
-                  <PantryItem
-                    key={item.id}
-                    item={item}
-                    categories={categories}
-                    onEdit={handleEditItem}
-                    onDelete={handleDeleteItem}
-                  />
+              )}
+          
+              {/* Collapsible Trash List */}
+                {showTrash && deletedItems.length > 0 && (
+                  <div className="mt-8 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="flex items-center gap-2 px-2 text-gray-400">
+                      <div className="h-px flex-1 bg-gray-200"></div>
+                      <span className="text-xs font-bold uppercase tracking-wider">Papierkorb</span>
+                      <div className="h-px flex-1 bg-gray-200"></div>
+                      
+                      {/* Permanent Delete Button */}
+                      <button 
+                          onClick={handlePermanentDelete}
+                          className="text-xs text-red-400 hover:text-red-600 font-medium transition-colors" >
+                          Endgültig leeren
+                        </button>
+                    </div>
+                    
+                {deletedItems.map(item => (
+                  <div 
+                    key={item.id} 
+                    className="bg-gray-50/50 border border-dashed border-gray-200 rounded-xl p-4 flex justify-between items-center group" >
+                    <div className="opacity-60">
+                      <p className="font-medium text-gray-700 line-through">{item.name}</p>
+                      <p className="text-xs text-gray-500">{item.category} • {item.quantity}</p>
+                    </div>
+                    <button
+                      onClick={() => handleRestoreItem(item.id)}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-blue-600 bg-white border border-blue-100 rounded-lg shadow-xs hover:bg-blue-600 hover:text-white transition-all" >
+                      Wiederherstellen
+                    </button>
+                  </div>
                 ))}
-              </div>
-            ) : (
-              /* Leere Liste */
-              <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Refrigerator className="w-8 h-8 text-gray-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  {selectedCategory === 'alle' ? 'Keine Zutaten vorhanden' : 'Keine Zutaten in dieser Kategorie'}
-                </h3>
-                <p className="text-gray-600 max-w-md mx-auto mb-6">
-                  {selectedCategory === 'alle' 
-                    ? 'Füge deine ersten Zutaten hinzu.' 
-                    : `Keine Zutaten in der Kategorie "${selectedCategory}".`}
-                </p>
-                {selectedCategory !== 'alle' && (
-                  <button
-                    onClick={() => setSelectedCategory('alle')}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Alle Zutaten anzeigen
-                  </button>
+                  </div>
                 )}
-              </div>
-            )}
           </div>
         </div>
       </div>
